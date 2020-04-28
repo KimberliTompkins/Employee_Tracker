@@ -46,6 +46,31 @@ async function departmentCRUD(action) {
             }  
 );
         case "Update":
+            const updateDept = new Department("",connection);
+            connection.query("select * from department",function(err,results){
+                if (err) throw err;
+                inquirer.prompt([{
+                   name:"choices",
+                   type: "rawlist",
+                   choices: function(){
+                       var choiceArray = [];
+                       var allResults = [];
+                       for (var i = 0; i <results.length; i++){
+                         choiceArray.push(`Name: ${results[i].name} ID:${results[i].id} `);
+                       }
+                       return choiceArray;
+                   },
+                   message: "Which department would you like to delete?"
+                }])
+                .then(function (answers){
+                    //get the id of the item to delete
+                    getID = answers.choices.match(/[^ID:]*$/).toString();
+                    deleteDept.delete(getID);
+                    console.log(`${answers.choices} deleted!\n`)
+                    getAction();
+                });
+            })
+
         case "Delete":
             const deleteDept = new Department("",connection);
            connection.query("select * from department",function(err,results){
@@ -74,7 +99,6 @@ async function departmentCRUD(action) {
         default:
             const viewDept = new Department("",connection);
             const view =viewDept.view()
-            console.log(view)
             getAction();
     }
    
