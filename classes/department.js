@@ -19,7 +19,16 @@ class Department {
     };
 
 
-    update() { };
+    update(idNum,newName) {
+        return this.connection.query(
+            "UPDATE department set ?",
+            {name: newName},
+            function (err, res) {
+                if (err) return err;
+                 
+            }
+        );
+     };
 
     delete(idNum) {
 

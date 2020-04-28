@@ -13,7 +13,7 @@ const connection = mysql.createConnection({
     database: "employee_trackerDB"
 })
 //All CRUD functions will take place in the classes based on the action
-async function employeeCRUD(action) {
+ function employeeCRUD(action) {
     // switch (action) {
         // case "Create":
             // inquirer.prompt([
@@ -28,7 +28,7 @@ async function employeeCRUD(action) {
 
 
 };
-async function departmentCRUD(action) {
+function departmentCRUD(action) {
     switch (action) {
         case "Create":
             inquirer.prompt([
@@ -60,14 +60,21 @@ async function departmentCRUD(action) {
                        }
                        return choiceArray;
                    },
-                   message: "Which department would you like to delete?"
+                   message: "Which department would you like to update?"
                 }])
                 .then(function (answers){
                     //get the id of the item to delete
                     getID = answers.choices.match(/[^ID:]*$/).toString();
-                    deleteDept.delete(getID);
-                    console.log(`${answers.choices} deleted!\n`)
+                    inquirer.prompt([{
+                        message: "The only field available for update is the department name. What should the name be?",
+                        type: "input",
+                        name: "newName"
+
+                    }]).then(function (answers){
+                    updateDept.update(getID,newName);
+                    console.log(`${answers.choices} updated!\n`)
                     getAction();
+                    });
                 });
             })
 
@@ -105,26 +112,44 @@ async function departmentCRUD(action) {
 };
 
 
-async function roleCRUD(action) {
-    // switch (action) {
-        // case "Create":
-            // inquirer.prompt([
-                // {
+ function roleCRUD(action) {
+    switch (action) {
+        case "Create": //title,salary,department
+            inquirer.prompt([
+                {
+                    name: "department",
+                    message: "Department?"
 
-                // }
-            // ])
-        // case "Update":
+                },
+                {
+                    name: "title",
+                    message: "title?"
 
-        // case "Delete":
+                },
+                {
+                    name: "salary",
+                    message: "Salary?"
 
-        // default:
+                }
 
-    // }
+            ]).then(({ title, department,salary }) => {
+                const role = new Role("","","","",connection);
+                role.create(title,salary,department,connection); 
+                console.log(`Role: ${title} created!\n`); 
+                getAction();
+            });
+        case "Update":
+
+        case "Delete":
+
+        default:
+
+    }
 
 };
 // first set of questions
 // do different things based on the answers
-async function getAction() {
+ function getAction() {
     inquirer.prompt([
         {
             type: "rawlist",
